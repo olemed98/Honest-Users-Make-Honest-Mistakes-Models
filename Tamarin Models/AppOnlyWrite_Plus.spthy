@@ -1,0 +1,400 @@
+theory AppOnlyWrite_Plus
+begin
+  
+builtins: signing
+
+
+// Restrictions
+
+restriction Equality:
+    "
+        All x y #i. Eq(x,y) @i ==> x = y
+    "
+
+restriction Inequality:
+    "
+        All x y #i. Neq(x, y) @i ==> not(x = y)
+    "
+
+restriction OnlyOnce:
+    "
+        All x #i #j. OnlyOnce(x) @#i & OnlyOnce(x) @#j ==> #i=#j
+    "
+
+
+// Creation of Agents
+
+rule CreateUser:
+    [ ] 
+  --[ OnlyOnce($U)
+    , Neq($U, 'I')
+    ]-> 
+    [ !UserID($U)
+    , NeedApp($U) ]
+
+
+rule CreateApp:
+    [ !UserID(U)
+    , NeedApp(U)
+    , Fr(~tsk) ]
+  --[ OnlyOnce($A)
+    , Neq($A, 'I')
+    ]->
+    [ !AppID($A, U)     
+    , !Tsk($A, ~tsk)
+    , !Tvk($A, pk(~tsk))
+    , Out(pk(~tsk)) ]
+ 
+rule CreateServer:
+    [ ] 
+  --[ OnlyOnce($S)
+    , Neq($S, 'I')
+    ]-> 
+    [ !ServerID($S)
+    , !WebPage($S)
+    , Corruptible($S) ]
+
+rule CreateBrowser:
+    [ ] 
+  --[ OnlyOnce($B)
+    , Neq($B, 'I')
+    ]-> 
+    [ !BrowserID($B)
+    , Corruptible($B) ]
+
+rule CreateIdentityProvider:
+    [ Fr(~ltk) ] 
+  --[ OnlyOnce('I') 
+    ]-> 
+    [ !Isk(~ltk)
+    , !Ipk(pk(~ltk))
+    , !WebPage('I')
+    , Out(pk(~ltk)) ]
+
+
+// Is an agent honest or not (only servers and browsers)
+rule HonestAgent:
+    [ Corruptible(A) ]
+  --[ Honest(A)  
+    ]->
+    [ !HonestID(A) ]
+
+rule DishonestAgent:
+    [ Corruptible(A) ] 
+  --[ Dishonest(A)
+    ]-> 
+    [ !CorruptID(A) ]
+
+
+// Adversary Capabilities
+rule AdvSend:
+    [ In(<X, m>)
+    , !CorruptID(A)   
+    ]
+  -->
+    [ Msg(A, X, m) ]
+
+rule AdvReceive:
+    [ Msg(X, A, m)
+    , !CorruptID(A) 
+    ]
+  -->
+    [ Out(m) ]
+
+
+// Initialization
+
+rule User_0:
+    [ !UserID(U)
+    , !BrowserID(B)
+    , !AppID(A, U) ]
+  --[ TraceU0(U, B, A)
+    , OnlyOnce(<U, B>)
+    , TalksToBrowser(U, B) 
+    ]->
+    [ User_0(U, B, A) ]
+
+rule Browser_0:
+    [ !BrowserID(B)
+    , !HonestID(B)
+    , !UserID(U)
+    , !ServerID(S) ]
+  --[ OnlyOnce(<B, 'Start'>)
+    , TraceB0(U, B, S)
+    ]->
+    [ Browser_0(B, U, S) ]
+
+rule App_0:
+    [ !AppID(A, U)
+    , !UserID(U)
+    , !Tsk(A, skT)
+    ]             
+  --[ TraceT0(U, A) 
+    ]->
+    [ App_0(A, U, skT) ]
+
+rule Server_0:
+    [ !ServerID(S)
+    , !HonestID(S)
+    ]
+  --[ TraceS0(S) 
+    ]->
+    [ Server_0(S) ]
+
+rule IdentityProvider_0:
+    [ !Isk(skI) ]
+  --[ TraceI0('I') 
+    ]->
+    [ IdentityProvider_0(skI) ]
+
+
+// Protocol rules
+
+rule Browser_1:
+    let
+        m1 = <'1'>
+    in
+    [ Browser_0(B, U, S) ]
+  --[ TraceB1(U, B, S) 
+    ]->
+    [ Msg(B, S, m1)
+    , Browser_1(B, U, S) ]
+ 
+rule Server_1:
+    let
+        m1 = <'1'>
+        m2 = <'2', ~cid, 'I'>
+    in
+    [ Fr(~cid)
+    , Msg(B, S, m1)
+    , !BrowserID(B)
+    , Server_0(S) ] 
+  --[ TraceS1(~cid, B, S) 
+    ]->
+    [ Msg(S, B, m2)
+    , Server_1(S, ~cid, B) ] 
+ 
+rule Browser_2:
+    let
+        m2 = <'2', cid, SI>
+        m3 = <'3', cid, U, S>
+    in
+    [ Msg(S, B, m2)
+    , !WebPage(SI)
+    , Browser_1(B, U, S) ]
+  --[ TraceB2(cid, U, B, S, SI) 
+    ]->
+    [ Msg(B, SI, m3)
+    , Browser_2(B, cid, U, SI) ] 
+ 
+rule IdentityProvider_1:
+    let
+         m3 = <'3', cid, U, S>
+         m4 = <'4', cid, S, ~nU>
+         m5 = <'5', cid, B, S, ~nU, ~nT>
+    in
+    [ Fr(~nT), Fr(~nU)
+    , Msg(B, 'I', m3)
+    , !UserID(U)
+    , !BrowserID(B)
+    , !AppID(A, U)
+    , !ServerID(S)
+    , IdentityProvider_0(skI)
+    ]
+  --[ OnlyOnce(cid)
+    , TraceI1(cid, U, B, A, S)
+    ]->
+    [ Msg('I', B, m4)
+    , Msg('I', A, m5)
+    , IdentityProvider_1(cid, U, B, A, S, skI, ~nT) ]
+ 
+rule Browser_3:
+    let
+        m4 = <'4', cid, S, nU>
+        m6 = <'6', SI, S, nU>
+    in
+    [ Msg(SI, B, m4)
+    , Browser_2(B, cid, U, SI) ]
+  --[ TraceB3(cid, U, B, S, SI) 
+    ]->
+    [ Msg(B, U, m6)
+    , Browser_3(B, cid, U, SI) ]
+
+rule App_1:
+    let
+        m5 = <'5', cid, B, S, nU, nT>
+        m7 = <'7', cid, S, ~ncU>
+    in
+    [ Fr(~ncU)
+    , Msg('I', A, m5)                                            
+    , !BrowserID(B)
+    , !ServerID(S)
+    , App_0(A, U, skT) ]
+  --[ TraceT1(cid, U, B, A, S) 
+    ]->
+    [ Msg(A, U, m7)
+    , App_1(A, cid, U, B, S, skT, nU, nT, ~ncU) ]
+ 
+rule User_1:
+    let
+        m6 = <'6', SI, S1, nU>
+        m7 = <'7', cid, S2, ncU>
+        m8 = <'8', nU, ncU>
+    in
+    [ Msg(B, U, m6)
+    , Msg(A, U, m7)
+    , User_0(U, B, A) ]
+  --[ Decide(U, S1, S2, SI)
+    , IntentU(cid, U, B, S1)
+    , TraceU1(cid, U, B, A, S1, S2, SI)
+    ]->
+    [ Msg(U, A, m8)
+    ]
+ 
+rule App_2:
+    let
+        m8 = <'8', nU, ncU>
+        sigT = sign(<cid, S, nT>, skT)
+        m9 = <'9', cid, sigT>
+    in
+    [ Msg(U, A, m8)
+    , App_1(A, cid, U, B, S, skT, nU, nT, ncU) ]
+  --[ TraceT2(cid, U, B, A, S) 
+    ]->
+    [ Msg(A, 'I', m9)
+    ]
+
+rule IdentityProvider_2:
+    let
+        m9 = <'9', cid, sigT>
+        verT = verify(sigT, <cid, S, nT>, vkT)
+        sigS = sign(<cid, U, S>, skI)
+        m10 = <'10', cid, U, S, sigS>
+    in
+    [ Msg(A, 'I', m9)
+    , IdentityProvider_1(cid, U, B, A, S, skI, nT)
+    , !Tvk(A, vkT) ]
+  --[ Eq(verT, true)
+    , TraceI2(cid, U, B, A, S)
+    ]->
+    [ Msg('I', B, m10) ]
+
+ 
+rule Browser_4:
+    let
+        m14 = <'10', cid, U, S, sigS>
+        m15 = <'11', cid, U, sigS>
+    in
+    [ Msg(SI, B, m14)
+    , Browser_3(B, cid, U, SI) ]
+  --[ TraceB4(cid, U, B, S, SI) ]->
+    [ Msg(B, S, m15) ]
+ 
+rule Server_2:
+    let
+        m15 = <'11', cid, U, sigS>
+        verS = verify(sigS, <cid, U, S>, pkI)
+    in
+    [ Msg(B, S, m15)
+    , !UserID(U)
+    , Server_1(S, cid, B)
+    , !Ipk(pkI) ]
+  --[ Eq(verS, true)
+    , BelieveS(cid, U, B, S)
+    , TraceS2(cid, U, B, S) 
+    ]->
+    [ ]
+
+
+// Sanity Check 
+ 
+lemma SanityCheck:
+exists-trace
+    "
+    Ex cid U B A S 
+    #tU0 #tU1 
+    #tB0 #tB1 #tB2 #tB3 #tB4 
+    #tT0 #tT1 #tT2 
+    #tS0 #tS1 #tS2 
+    #tI0 #tI1 #tI2
+    . (
+    //Initialications
+    TraceU0(U, B, A) @tU0
+    & TraceB0(U, B, S) @tB0
+    & TraceT0(U, A) @tT0
+    & TraceS0(S) @tS0
+    & TraceI0('I') @tI0
+    //Protocol run
+    & TraceB1(U, B, S) @tB1
+    & TraceS1(cid, B, S) @tS1
+    & TraceB2(cid, U, B, S, 'I') @tB2
+    & TraceI1(cid, U, B, A, S) @tI1
+    & TraceB3(cid, U, B, S, 'I') @tB3
+    & TraceT1(cid, U, B, A, S) @tT1
+    & TraceU1(cid, U, B, A, S, S, 'I') @tU1
+    & TraceT2(cid, U, B, A, S) @tT2
+    & TraceI2(cid, U, B, A, S) @tI2
+    & TraceB4(cid, U, B, S, 'I') @tB4
+    & TraceS2(cid, U, B, S) @tS2
+    // Initialisation is before protocol run
+    & tU0 < tB1 & tB0 < tB1 & tT0 < tB1 & tS0 < tB1 & tI0 < tB1
+    // Protocol run follows order
+    & tB1 < tS1
+    & tS1 < tB2
+    & tB2 < tI1
+    & tI1 < tB3
+    & tI1 < tT1
+    & tB3 < tU1
+    & tT1 < tU1
+    & tU1 < tT2
+    & tT2 < tI2
+    & tI2 < tB4
+    & tB4 < tS2
+    & not(Ex X #tX. Dishonest(X) @tX)
+    )   
+    "
+
+
+// Security Claims
+
+lemma PerfectUser_Security: 
+    "
+    All cid U B S #tS_B. 
+    BelieveS(cid, U, B, S) @tS_B 
+    //& not(Ex X #t1 #t2. Dishonest(X) @t1 & TalksToBrowser(U, X) @t2)  
+    & not(Ex S1 S2 SI #tU_D. 
+      Decide(U, S1, S2, SI) @tU_D & (not(S1=S2) | not(SI = 'I')))
+    ==> 
+    Ex B2 #tU_B. 
+    IntentU(cid, U, B2, S) @tU_B 
+    & tU_B < tS_B
+    & ((B = B2) | (Ex #t1 #t2. Dishonest(B) @t1 & Dishonest(B2) @t2))
+    "
+
+lemma ImperfectUser_HonestBrowser_WeakSecurity: 
+    "
+    All cid U B S #tS_B. 
+    BelieveS(cid, U, B, S) @tS_B 
+    & not(Ex X #t1 #t2. Dishonest(X) @t1 & TalksToBrowser(U, X) @t2)  
+    //& not(Ex S1 S2 SI #tU_D. 
+    //  Decide(U, S1, S2, SI) @tU_D & (not(S1=S2) | not(SI = 'I')))
+    ==> 
+    Ex B2 #tU_B. 
+    IntentU(cid, U, B2, S) @tU_B 
+    & tU_B < tS_B
+    "
+
+lemma ImperfectUser_Aliveness: 
+    "
+    All cid U B S #tS_B. 
+    BelieveS(cid, U, B, S) @tS_B 
+    //& not(Ex X #t1 #t2. Dishonest(X) @t1 & TalksToBrowser(U, X) @t2)  
+    //& not(Ex S1 S2 SI #tU_D. 
+    //  Decide(U, S1, S2, SI) @tU_D & (not(S1=S2) | not(SI = 'I')))
+    ==> 
+    Ex B2 S2 #tU_B. 
+    IntentU(cid, U, B2, S2) @tU_B 
+    & tU_B < tS_B
+    "
+
+end
