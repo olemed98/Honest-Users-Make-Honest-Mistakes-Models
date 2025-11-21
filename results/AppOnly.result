@@ -1,0 +1,747 @@
+maude tool: 'maude'
+ checking version: 2.7.1. OK.
+ checking installation: [Saturating Sources] Step 1/5
+[Saturating Sources] Step 2/5
+[Saturating Sources] Step 1/5
+[Saturating Sources] Step 2/5
+[Saturating Sources] Step 1/5
+[Saturating Sources] Step 2/5
+[Saturating Sources] Step 1/5
+[Saturating Sources] Step 2/5
+[Saturating Sources] Step 1/5
+[Saturating Sources] Step 2/5
+[Saturating Sources] Step 1/5
+[Saturating Sources] Step 2/5
+[Saturating Sources] Step 1/5
+[Saturating Sources] Step 2/5
+[Saturating Sources] Step 1/5
+[Saturating Sources] Step 2/5
+[Saturating Sources] Step 1/5
+[Saturating Sources] Step 2/5
+[Saturating Sources] Step 1/5
+[Saturating Sources] Step 2/5
+[Saturating Sources] Step 1/5
+[Saturating Sources] Step 2/5
+[Saturating Sources] Step 1/5
+[Saturating Sources] Step 2/5
+[Saturating Sources] Step 1/5
+[Saturating Sources] Step 2/5
+[Saturating Sources] Step 1/5
+[Saturating Sources] Step 2/5
+[Saturating Sources] Step 1/5
+[Saturating Sources] Step 2/5
+[Saturating Sources] Step 1/5
+[Saturating Sources] Step 2/5
+[Saturating Sources] Step 1/5
+[Saturating Sources] Step 2/5
+[Saturating Sources] Step 1/5
+[Saturating Sources] Step 2/5
+[Saturating Sources] Step 1/5
+[Saturating Sources] Step 2/5
+[Saturating Sources] Step 1/5
+[Saturating Sources] Step 2/5
+[Saturating Sources] Step 1/5
+[Saturating Sources] Step 2/5
+[Saturating Sources] Step 1/5
+[Saturating Sources] Step 2/5
+[Saturating Sources] Step 1/5
+[Saturating Sources] Step 2/5
+OK.
+theory AppOnly begin
+
+// Function signature and definition of the equational theory E
+
+functions: fst/1, pair/2, pk/1, sign/2, snd/1, true/0, verify/3
+equations:
+    fst(<x.1, x.2>) = x.1,
+    snd(<x.1, x.2>) = x.2,
+    verify(sign(x.1, x.2), x.1, pk(x.2)) = true
+
+
+
+
+
+
+
+restriction Equality:
+  "∀ x y #i. (Eq( x, y ) @ #i) ⇒ (x = y)"
+  // safety formula
+
+restriction Inequality:
+  "∀ x y #i. (Neq( x, y ) @ #i) ⇒ (¬(x = y))"
+  // safety formula
+
+restriction OnlyOnce:
+  "∀ x #i #j. ((OnlyOnce( x ) @ #i) ∧ (OnlyOnce( x ) @ #j)) ⇒ (#i = #j)"
+  // safety formula
+
+rule (modulo E) CreateUser:
+   [ ]
+  --[ OnlyOnce( $U ), Neq( $U, 'I' ) ]->
+   [ !UserID( $U ), NeedApp( $U ) ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) CreateApp:
+   [ !UserID( U ), NeedApp( U ), Fr( ~tsk ) ]
+  --[ OnlyOnce( $A ), Neq( $A, 'I' ) ]->
+   [
+   !AppID( $A, U ), !Tsk( $A, ~tsk ), !Tvk( $A, pk(~tsk) ), Out( pk(~tsk) )
+   ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) CreateServer:
+   [ ]
+  --[ OnlyOnce( $S ), Neq( $S, 'I' ) ]->
+   [ !ServerID( $S ), !WebPage( $S ), Corruptible( $S ) ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) CreateBrowser:
+   [ ]
+  --[ OnlyOnce( $B ), Neq( $B, 'I' ) ]->
+   [ !BrowserID( $B ), Corruptible( $B ) ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) CreateIdentityProvider:
+   [ Fr( ~ltk ) ]
+  --[ OnlyOnce( 'I' ) ]->
+   [ !Isk( ~ltk ), !Ipk( pk(~ltk) ), !WebPage( 'I' ), Out( pk(~ltk) ) ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) HonestAgent:
+   [ Corruptible( A ) ] --[ Honest( A ) ]-> [ !HonestID( A ) ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) DishonestAgent:
+   [ Corruptible( A ) ] --[ Dishonest( A ) ]-> [ !CorruptID( A ) ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) AdvSend:
+   [ In( <X, m> ), !CorruptID( A ) ] --> [ Msg( A, X, m ) ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) AdvReceive:
+   [ Msg( X, A, m ), !CorruptID( A ) ] --> [ Out( m ) ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) User_0:
+   [ !UserID( U ), !BrowserID( B ), !AppID( A, U ) ]
+  --[ TraceU0( U, B, A ), OnlyOnce( <U, B> ), TalksToBrowser( U, B ) ]->
+   [ User_0( U, B, A ) ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) Browser_0:
+   [ !BrowserID( B ), !HonestID( B ), !UserID( U ), !ServerID( S ) ]
+  --[ OnlyOnce( <B, 'Start'> ), TraceB0( U, B, S ) ]->
+   [ Browser_0( B, U, S ) ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) App_0:
+   [ !AppID( A, U ), !UserID( U ), !Tsk( A, skT ) ]
+  --[ TraceT0( U, A ) ]->
+   [ App_0( A, U, skT ) ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) Server_0:
+   [ !ServerID( S ), !HonestID( S ) ] --[ TraceS0( S ) ]-> [ Server_0( S ) ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) IdentityProvider_0:
+   [ !Isk( skI ) ] --[ TraceI0( 'I' ) ]-> [ IdentityProvider_0( skI ) ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) Browser_1:
+   [ Browser_0( B, U, S ) ]
+  --[ TraceB1( U, B, S ) ]->
+   [ Msg( B, S, '1' ), Browser_1( B, U, S ) ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) Server_1:
+   [ Fr( ~cid ), Msg( B, S, '1' ), !BrowserID( B ), Server_0( S ) ]
+  --[ TraceS1( ~cid, B, S ) ]->
+   [ Msg( S, B, <'2', ~cid, 'I'> ), Server_1( S, ~cid, B ) ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) Browser_2:
+   [ Msg( S, B, <'2', cid, SI> ), !WebPage( SI ), Browser_1( B, U, S ) ]
+  --[ TraceB2( cid, U, B, S, SI ) ]->
+   [ Msg( B, SI, <'3', cid, U, S> ), Browser_2( B, cid, U, SI ) ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) IdentityProvider_1:
+   [
+   Fr( ~nT ), Msg( B, 'I', <'3', cid, U, S> ), !UserID( U ),
+   !BrowserID( B ), !AppID( A, U ), !ServerID( S ),
+   IdentityProvider_0( skI )
+   ]
+  --[ OnlyOnce( cid ), TraceI1( cid, U, B, A, S ) ]->
+   [
+   Msg( 'I', B, <'4', cid, S> ), Msg( 'I', A, <'5', cid, B, S, ~nT> ),
+   IdentityProvider_1( cid, U, B, A, S, skI, ~nT )
+   ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) Browser_3:
+   [ Msg( SI, B, <'4', cid, S> ), Browser_2( B, cid, U, SI ) ]
+  --[ TraceB3( cid, U, B, S, SI ) ]->
+   [ Msg( B, U, <'6', SI, S> ), Browser_3( B, cid, U, SI ) ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) App_1:
+   [
+   Fr( ~ncU ), Msg( 'I', A, <'5', cid, B, S, nT> ), !BrowserID( B ),
+   !ServerID( S ), App_0( A, U, skT )
+   ]
+  --[ TraceT1( cid, U, B, A, S ) ]->
+   [ Msg( A, U, <'7', cid, ~ncU> ), App_1( A, cid, U, B, S, skT, nT, ~ncU )
+   ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) User_1:
+   [
+   Msg( B, U, <'6', SI, S> ), Msg( A, U, <'7', cid, ncU> ),
+   User_0( U, B, A )
+   ]
+  --[
+  Decide( U, SI ), IntentU( cid, U, B, S ), TraceU1( cid, U, B, A, S, SI )
+  ]->
+   [ Msg( U, A, <'8', ncU> ) ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) App_2:
+   [ Msg( U, A, <'8', ncU> ), App_1( A, cid, U, B, S, skT, nT, ncU ) ]
+  --[ TraceT2( cid, U, B, A, S ) ]->
+   [ Msg( A, 'I', <'9', cid, sign(<cid, S, nT>, skT)> ) ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) IdentityProvider_2:
+   [
+   Msg( A, 'I', <'9', cid, sigT> ),
+   IdentityProvider_1( cid, U, B, A, S, skI, nT ), !Tvk( A, vkT )
+   ]
+  --[
+  Eq( verify(sigT, <cid, S, nT>, vkT), true ), TraceI2( cid, U, B, A, S )
+  ]->
+   [ Msg( 'I', B, <'10', cid, U, S, sign(<cid, U, S>, skI)> ) ]
+
+  /*
+  rule (modulo AC) IdentityProvider_2:
+     [
+     Msg( A, 'I', <'9', cid, sigT> ),
+     IdentityProvider_1( cid, U, B, A, S, skI, nT ), !Tvk( A, vkT )
+     ]
+    --[ Eq( z, true ), TraceI2( cid, U, B, A, S ) ]->
+     [ Msg( 'I', B, <'10', cid, U, S, sign(<cid, U, S>, skI)> ) ]
+    variants (modulo AC)
+    1. S     = S.21
+       cid   = cid.23
+       nT    = nT.24
+       sigT  = sigT.25
+       vkT   = vkT.27
+       z     = verify(sigT.25, <cid.23, S.21, nT.24>, vkT.27)
+    
+    2. S     = S.41
+       cid   = cid.43
+       nT    = nT.44
+       sigT  = sign(<cid.43, S.41, nT.44>, x.78)
+       vkT   = pk(x.78)
+       z     = true
+  */
+
+rule (modulo E) Browser_4:
+   [ Msg( SI, B, <'10', cid, U, S, sigS> ), Browser_3( B, cid, U, SI ) ]
+  --[ TraceB4( cid, U, B, S, SI ) ]->
+   [ Msg( B, S, <'11', cid, U, sigS> ) ]
+
+  /* has exactly the trivial AC variant */
+
+rule (modulo E) Server_2:
+   [
+   Msg( B, S, <'11', cid, U, sigS> ), !UserID( U ), Server_1( S, cid, B ),
+   !Ipk( pkI )
+   ]
+  --[
+  Eq( verify(sigS, <cid, U, S>, pkI), true ), BelieveS( cid, U, B, S ),
+  TraceS2( cid, U, B, S )
+  ]->
+   [ ]
+
+  /*
+  rule (modulo AC) Server_2:
+     [
+     Msg( B, S, <'11', cid, U, sigS> ), !UserID( U ), Server_1( S, cid, B ),
+     !Ipk( pkI )
+     ]
+    --[ Eq( z, true ), BelieveS( cid, U, B, S ), TraceS2( cid, U, B, S ) ]->
+     [ ]
+    variants (modulo AC)
+    1. S     = S.10
+       U     = U.11
+       cid   = cid.12
+       pkI   = pkI.13
+       sigS  = sigS.14
+       z     = verify(sigS.14, <cid.12, U.11, S.10>, pkI.13)
+    
+    2. S     = S.13
+       U     = U.14
+       cid   = cid.15
+       pkI   = pk(x.23)
+       sigS  = sign(<cid.15, U.14, S.13>, x.23)
+       z     = true
+  */
+
+lemma SanityCheck:
+  exists-trace
+  "∃ cid U B A S #tU0 #tU1 #tB0 #tB1 #tB2 #tB3 #tB4 #tT0 #tT1 #tT2 #tS0
+     #tS1 #tS2 #tI0 #tI1 #tI2.
+    ((((((((((((((((((((((((((((((((TraceU0( U, B, A ) @ #tU0) ∧
+                                   (TraceB0( U, B, S ) @ #tB0)) ∧
+                                  (TraceT0( U, A ) @ #tT0)) ∧
+                                 (TraceS0( S ) @ #tS0)) ∧
+                                (TraceI0( 'I' ) @ #tI0)) ∧
+                               (TraceB1( U, B, S ) @ #tB1)) ∧
+                              (TraceS1( cid, B, S ) @ #tS1)) ∧
+                             (TraceB2( cid, U, B, S, 'I' ) @ #tB2)) ∧
+                            (TraceI1( cid, U, B, A, S ) @ #tI1)) ∧
+                           (TraceB3( cid, U, B, S, 'I' ) @ #tB3)) ∧
+                          (TraceT1( cid, U, B, A, S ) @ #tT1)) ∧
+                         (TraceU1( cid, U, B, A, S, 'I' ) @ #tU1)) ∧
+                        (TraceT2( cid, U, B, A, S ) @ #tT2)) ∧
+                       (TraceI2( cid, U, B, A, S ) @ #tI2)) ∧
+                      (TraceB4( cid, U, B, S, 'I' ) @ #tB4)) ∧
+                     (TraceS2( cid, U, B, S ) @ #tS2)) ∧
+                    (#tU0 < #tB1)) ∧
+                   (#tB0 < #tB1)) ∧
+                  (#tT0 < #tB1)) ∧
+                 (#tS0 < #tB1)) ∧
+                (#tI0 < #tB1)) ∧
+               (#tB1 < #tS1)) ∧
+              (#tS1 < #tB2)) ∧
+             (#tB2 < #tI1)) ∧
+            (#tI1 < #tB3)) ∧
+           (#tI1 < #tT1)) ∧
+          (#tB3 < #tU1)) ∧
+         (#tT1 < #tU1)) ∧
+        (#tU1 < #tT2)) ∧
+       (#tT2 < #tI2)) ∧
+      (#tI2 < #tB4)) ∧
+     (#tB4 < #tS2)) ∧
+    (¬(∃ X #tX. Dishonest( X ) @ #tX))"
+/*
+guarded formula characterizing all satisfying traces:
+"∃ cid U B A S #tU0 #tU1 #tB0 #tB1 #tB2 #tB3 #tB4 #tT0 #tT1 #tT2 #tS0
+   #tS1 #tS2 #tI0 #tI1 #tI2.
+  (TraceU0( U, B, A ) @ #tU0) ∧
+  (TraceB0( U, B, S ) @ #tB0) ∧
+  (TraceT0( U, A ) @ #tT0) ∧
+  (TraceS0( S ) @ #tS0) ∧
+  (TraceI0( 'I' ) @ #tI0) ∧
+  (TraceB1( U, B, S ) @ #tB1) ∧
+  (TraceS1( cid, B, S ) @ #tS1) ∧
+  (TraceB2( cid, U, B, S, 'I' ) @ #tB2) ∧
+  (TraceI1( cid, U, B, A, S ) @ #tI1) ∧
+  (TraceB3( cid, U, B, S, 'I' ) @ #tB3) ∧
+  (TraceT1( cid, U, B, A, S ) @ #tT1) ∧
+  (TraceU1( cid, U, B, A, S, 'I' ) @ #tU1) ∧
+  (TraceT2( cid, U, B, A, S ) @ #tT2) ∧
+  (TraceI2( cid, U, B, A, S ) @ #tI2) ∧
+  (TraceB4( cid, U, B, S, 'I' ) @ #tB4) ∧
+  (TraceS2( cid, U, B, S ) @ #tS2)
+ ∧
+  (#tU0 < #tB1) ∧
+  (#tB0 < #tB1) ∧
+  (#tT0 < #tB1) ∧
+  (#tS0 < #tB1) ∧
+  (#tI0 < #tB1) ∧
+  (#tB1 < #tS1) ∧
+  (#tS1 < #tB2) ∧
+  (#tB2 < #tI1) ∧
+  (#tI1 < #tB3) ∧
+  (#tI1 < #tT1) ∧
+  (#tB3 < #tU1) ∧
+  (#tT1 < #tU1) ∧
+  (#tU1 < #tT2) ∧
+  (#tT2 < #tI2) ∧
+  (#tI2 < #tB4) ∧
+  (#tB4 < #tS2) ∧
+  (∀ X #tX. (Dishonest( X ) @ #tX) ⇒ ⊥)"
+*/
+simplify
+solve( !UserID( U ) ▶₀ #tU0 )
+  case CreateUser
+  solve( !BrowserID( B ) ▶₁ #tU0 )
+    case CreateBrowser
+    solve( !AppID( A, $U ) ▶₂ #tU0 )
+      case CreateApp
+      solve( Msg( $B, $U, <'6', 'I', S> ) ▶₀ #tU1 )
+        case Browser_3_case_3
+        solve( Msg( $A, $U, <'7', ~cid, ncU.2> ) ▶₁ #tU1 )
+          case App_1
+          solve( User_0( $U, $B, $A ) ▶₂ #tU1 )
+            case User_0
+            solve( Browser_0( $B, $U, $S ) ▶₀ #tB1 )
+              case Browser_0
+              solve( Msg( $S, $B, <'2', ~cid, 'I'> ) ▶₀ #tB2 )
+                case Server_1
+                solve( Msg( 'I', $B, <'4', ~cid, $S> ) ▶₀ #tB3 )
+                  case IdentityProvider_1
+                  solve( Msg( 'I', $B, <'10', ~cid, $U, $S, sigS> ) ▶₀ #tB4 )
+                    case IdentityProvider_2
+                    solve( Browser_3( $B, ~cid, $U, 'I' ) ▶₁ #tB4 )
+                      case Browser_3
+                      solve( !AppID( $A, $U ) ▶₀ #tT0 )
+                        case CreateApp
+                        solve( !UserID( $U ) ▶₁ #tT0 )
+                          case CreateUser
+                          solve( !Tsk( $A, skT ) ▶₂ #tT0 )
+                            case CreateApp
+                            solve( Msg( 'I', $A, <'5', ~cid, $B, $S, nT.2> ) ▶₁ #tT1 )
+                              case IdentityProvider_1
+                              solve( Msg( $U, $A, <'8', ncU.1> ) ▶₀ #tT2 )
+                                case User_1_case_12
+                                solve( App_1( $A, ~cid, $U, $B, $S, skT, nT.2, ~ncU.1 ) ▶₁ #tT2 )
+                                  case App_1
+                                  solve( !ServerID( $S ) ▶₀ #tS0 )
+                                    case CreateServer
+                                    solve( !HonestID( $S ) ▶₁ #tS0 )
+                                      case HonestAgent
+                                      solve( Msg( $B, $S, <'11', ~cid, $U, sign(<~cid, $U, $S>, x.1)>
+                                             ) ▶₀ #tS2 )
+                                        case Browser_4
+                                        solve( !UserID( $U ) ▶₁ #tS2 )
+                                          case CreateUser
+                                          solve( Server_1( $S, ~cid, $B ) ▶₂ #tS2 )
+                                            case Server_1
+                                            solve( !Ipk( pk(~ltk) ) ▶₃ #tS2 )
+                                              case CreateIdentityProvider
+                                              solve( !Isk( skI ) ▶₀ #tI0 )
+                                                case CreateIdentityProvider
+                                                solve( Msg( $A, 'I', <'9', ~cid, sign(<~cid, $S, nT.1>, x)>
+                                                       ) ▶₀ #tI2 )
+                                                  case App_2
+                                                  SOLVED // trace found
+                                                qed
+                                              qed
+                                            qed
+                                          qed
+                                        qed
+                                      qed
+                                    qed
+                                  qed
+                                qed
+                              qed
+                            qed
+                          qed
+                        qed
+                      qed
+                    qed
+                  qed
+                qed
+              qed
+            qed
+          qed
+        qed
+      qed
+    qed
+  qed
+qed
+
+lemma PerfectUser_WeakSecurity:
+  all-traces
+  "∀ cid U B S #tS_B.
+    ((BelieveS( cid, U, B, S ) @ #tS_B) ∧
+     (¬(∃ SI #tU_D. (Decide( U, SI ) @ #tU_D) ∧ (¬(SI = 'I'))))) ⇒
+    (∃ B2 #tU_B. (IntentU( cid, U, B2, S ) @ #tU_B) ∧ (#tU_B < #tS_B))"
+/*
+guarded formula characterizing all counter-examples:
+"∃ cid U B S #tS_B.
+  (BelieveS( cid, U, B, S ) @ #tS_B)
+ ∧
+  (∀ SI #tU_D. (Decide( U, SI ) @ #tU_D) ⇒ SI = 'I') ∧
+  (∀ B2 #tU_B. (IntentU( cid, U, B2, S ) @ #tU_B) ⇒ ¬(#tU_B < #tS_B))"
+*/
+simplify
+solve( Msg( B, S, <'11', cid, U, sign(<cid, U, S>, x)> ) ▶₀ #tS_B )
+  case AdvSend_case_2
+  solve( !UserID( U ) ▶₁ #tS_B )
+    case CreateUser
+    solve( Server_1( S, cid, $B ) ▶₂ #tS_B )
+      case Server_1
+      solve( !Ipk( pk(x) ) ▶₃ #tS_B )
+        case CreateIdentityProvider
+        solve( !KU( ~cid ) @ #vk.6 )
+          case AdvReceive
+          solve( !KU( sign(<~cid, $U, $S>, ~ltk) ) @ #vk.9 )
+            case AdvReceive_case_1
+            SOLVED // trace found
+          qed
+        qed
+      qed
+    qed
+  qed
+qed
+
+lemma PerfectUser_HonestBrowser_WeakSecurity:
+  all-traces
+  "∀ cid U B S #tS_B.
+    (((BelieveS( cid, U, B, S ) @ #tS_B) ∧
+      (¬(∃ X #t1 #t2.
+          (Dishonest( X ) @ #t1) ∧ (TalksToBrowser( U, X ) @ #t2)))) ∧
+     (¬(∃ SI #tU_D. (Decide( U, SI ) @ #tU_D) ∧ (¬(SI = 'I'))))) ⇒
+    (∃ B2 #tU_B. (IntentU( cid, U, B2, S ) @ #tU_B) ∧ (#tU_B < #tS_B))"
+/*
+guarded formula characterizing all counter-examples:
+"∃ cid U B S #tS_B.
+  (BelieveS( cid, U, B, S ) @ #tS_B)
+ ∧
+  (∀ X #t1 #t2.
+    (Dishonest( X ) @ #t1) ∧ (TalksToBrowser( U, X ) @ #t2) ⇒ ⊥) ∧
+  (∀ SI #tU_D. (Decide( U, SI ) @ #tU_D) ⇒ SI = 'I') ∧
+  (∀ B2 #tU_B. (IntentU( cid, U, B2, S ) @ #tU_B) ⇒ ¬(#tU_B < #tS_B))"
+*/
+simplify
+solve( Msg( B, S, <'11', cid, U, sign(<cid, U, S>, x)> ) ▶₀ #tS_B )
+  case AdvSend_case_2
+  solve( !UserID( U ) ▶₁ #tS_B )
+    case CreateUser
+    solve( Server_1( S, cid, $B ) ▶₂ #tS_B )
+      case Server_1
+      solve( !Ipk( pk(x) ) ▶₃ #tS_B )
+        case CreateIdentityProvider
+        solve( !KU( ~cid ) @ #vk.6 )
+          case AdvReceive
+          solve( !KU( sign(<~cid, $U, $S>, ~ltk) ) @ #vk.9 )
+            case AdvReceive_case_2
+            SOLVED // trace found
+          qed
+        qed
+      qed
+    qed
+  qed
+qed
+
+lemma ImperfectUser_Aliveness:
+  all-traces
+  "∀ cid U B S #tS_B.
+    (BelieveS( cid, U, B, S ) @ #tS_B) ⇒
+    (∃ B2 S2 #tU_B. (IntentU( cid, U, B2, S2 ) @ #tU_B) ∧ (#tU_B < #tS_B))"
+/*
+guarded formula characterizing all counter-examples:
+"∃ cid U B S #tS_B.
+  (BelieveS( cid, U, B, S ) @ #tS_B)
+ ∧
+  ∀ B2 S2 #tU_B. (IntentU( cid, U, B2, S2 ) @ #tU_B) ⇒ ¬(#tU_B < #tS_B)"
+*/
+simplify
+solve( Msg( B, S, <'11', cid, U, sign(<cid, U, S>, x)> ) ▶₀ #tS_B )
+  case AdvSend_case_1
+  solve( !UserID( U ) ▶₁ #tS_B )
+    case CreateUser
+    by solve( Server_1( S.1, cid, $S ) ▶₂ #tS_B )
+  qed
+next
+  case AdvSend_case_2
+  solve( !UserID( U ) ▶₁ #tS_B )
+    case CreateUser
+    solve( Server_1( S, cid, $B ) ▶₂ #tS_B )
+      case Server_1
+      solve( !Ipk( pk(x) ) ▶₃ #tS_B )
+        case CreateIdentityProvider
+        solve( !KU( ~cid ) @ #vk.6 )
+          case AdvReceive
+          solve( !KU( sign(<~cid, $U, $S>, ~ltk) ) @ #vk.9 )
+            case AdvReceive_case_1
+            by contradiction /* from formulas */
+          next
+            case AdvReceive_case_2
+            by contradiction /* from formulas */
+          next
+            case AdvReceive_case_3
+            by contradiction /* from formulas */
+          next
+            case AdvReceive_case_4
+            by contradiction /* from formulas */
+          next
+            case c_sign
+            by solve( !KU( ~ltk ) @ #vk.13 )
+          qed
+        qed
+      qed
+    qed
+  qed
+next
+  case Browser_4_case_1
+  solve( !UserID( $U ) ▶₁ #tS_B )
+    case CreateUser
+    by solve( Server_1( S, cid, $B ) ▶₂ #tS_B )
+  qed
+next
+  case Browser_4_case_2
+  by contradiction /* from formulas */
+next
+  case Browser_4_case_3
+  by contradiction /* from formulas */
+next
+  case Browser_4_case_4
+  by contradiction /* from formulas */
+next
+  case Browser_4_case_5
+  by contradiction /* from formulas */
+next
+  case Browser_4_case_6
+  by contradiction /* from formulas */
+next
+  case Browser_4_case_7
+  by contradiction /* from formulas */
+next
+  case Browser_4_case_8
+  by contradiction /* from formulas */
+next
+  case Browser_4_case_9
+  by contradiction /* from formulas */
+qed
+
+lemma ImperfectUser_HonestBrowser_HonestyPreserving:
+  all-traces
+  "∀ cid U B S #tS_B.
+    ((BelieveS( cid, U, B, S ) @ #tS_B) ∧
+     (¬(∃ X #t1 #t2.
+         (Dishonest( X ) @ #t1) ∧ (TalksToBrowser( U, X ) @ #t2)))) ⇒
+    (¬(∃ #tB. Dishonest( B ) @ #tB))"
+/*
+guarded formula characterizing all counter-examples:
+"∃ cid U B S #tS_B.
+  (BelieveS( cid, U, B, S ) @ #tS_B)
+ ∧
+  (∀ X #t1 #t2.
+    (Dishonest( X ) @ #t1) ∧ (TalksToBrowser( U, X ) @ #t2) ⇒ ⊥) ∧
+  (∃ #tB. (Dishonest( B ) @ #tB))"
+*/
+simplify
+solve( Msg( B, S, <'11', cid, U, sign(<cid, U, S>, x)> ) ▶₀ #tS_B )
+  case AdvSend_case_2
+  solve( !UserID( U ) ▶₁ #tS_B )
+    case CreateUser
+    solve( Server_1( S, cid, $B ) ▶₂ #tS_B )
+      case Server_1
+      solve( !Ipk( pk(x) ) ▶₃ #tS_B )
+        case CreateIdentityProvider
+        solve( Corruptible( $B ) ▶₀ #tB )
+          case CreateBrowser
+          solve( !KU( ~cid ) @ #vk.6 )
+            case AdvReceive
+            solve( !KU( sign(<~cid, $U, $S>, ~ltk) ) @ #vk.9 )
+              case AdvReceive_case_2
+              SOLVED // trace found
+            qed
+          qed
+        qed
+      qed
+    qed
+  qed
+qed
+
+lemma PerfectUser_HonestBrowser_HonestyPreserving:
+  all-traces
+  "∀ cid U B S #tS_B.
+    (((BelieveS( cid, U, B, S ) @ #tS_B) ∧
+      (¬(∃ X #t1 #t2.
+          (Dishonest( X ) @ #t1) ∧ (TalksToBrowser( U, X ) @ #t2)))) ∧
+     (¬(∃ SI #tU_D. (Decide( U, SI ) @ #tU_D) ∧ (¬(SI = 'I'))))) ⇒
+    (¬(∃ #tB. Dishonest( B ) @ #tB))"
+/*
+guarded formula characterizing all counter-examples:
+"∃ cid U B S #tS_B.
+  (BelieveS( cid, U, B, S ) @ #tS_B)
+ ∧
+  (∀ X #t1 #t2.
+    (Dishonest( X ) @ #t1) ∧ (TalksToBrowser( U, X ) @ #t2) ⇒ ⊥) ∧
+  (∀ SI #tU_D. (Decide( U, SI ) @ #tU_D) ⇒ SI = 'I') ∧
+  (∃ #tB. (Dishonest( B ) @ #tB))"
+*/
+simplify
+solve( Msg( B, S, <'11', cid, U, sign(<cid, U, S>, x)> ) ▶₀ #tS_B )
+  case AdvSend_case_2
+  solve( !UserID( U ) ▶₁ #tS_B )
+    case CreateUser
+    solve( Server_1( S, cid, $B ) ▶₂ #tS_B )
+      case Server_1
+      solve( !Ipk( pk(x) ) ▶₃ #tS_B )
+        case CreateIdentityProvider
+        solve( Corruptible( $B ) ▶₀ #tB )
+          case CreateBrowser
+          solve( !KU( ~cid ) @ #vk.6 )
+            case AdvReceive
+            solve( !KU( sign(<~cid, $U, $S>, ~ltk) ) @ #vk.9 )
+              case AdvReceive_case_2
+              SOLVED // trace found
+            qed
+          qed
+        qed
+      qed
+    qed
+  qed
+qed
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* All wellformedness checks were successful. */
+
+/*
+Generated from:
+Tamarin version 1.8.0
+Maude version 2.7.1
+Git revision: UNKNOWN, branch: UNKNOWN
+Compiled at: 2023-09-01 12:12:18.719033 UTC
+*/
+
+end
+
+==============================================================================
+summary of summaries:
+
+analyzed: AppOnly.spthy
+
+  processing time: 32.55s
+  
+  SanityCheck (exists-trace): verified (27 steps)
+  PerfectUser_WeakSecurity (all-traces): falsified - found trace (8 steps)
+  PerfectUser_HonestBrowser_WeakSecurity (all-traces): falsified - found trace (8 steps)
+  ImperfectUser_Aliveness (all-traces): verified (24 steps)
+  ImperfectUser_HonestBrowser_HonestyPreserving (all-traces): falsified - found trace (9 steps)
+  PerfectUser_HonestBrowser_HonestyPreserving (all-traces): falsified - found trace (9 steps)
+
+==============================================================================
