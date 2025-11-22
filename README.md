@@ -22,7 +22,7 @@ As reported by the command `/usr/bin/time -l` (`-l` is an option for BSD version
 ```
 Password.spthy                     123.78 real       157.68 user       13.31 sys      232113536  peak memory footprint
 AppOnly.spthy                       32.60 real        67.24 user        3.89 sys      615155968  peak memory footprint
-AppOnly_Plus.spthy                  32.54 real        68.74 user        3.91 sys       719178240 peak memory footprint
+AppOnly_Plus.spthy                  32.54 real        68.74 user        3.91 sys      719178240  peak memory footprint
 AppOnlyWrite.spthy                  42.28 real        58.25 user        4.63 sys      476628864  peak memory footprint
 AppOnlyWrite_Plus.spthy             42.77 real        57.02 user        4.77 sys      495585344  peak memory footprint
 AppOnlyCompare.spthy                34.55 real        71.81 user        4.40 sys      624511232  peak memory footprint
