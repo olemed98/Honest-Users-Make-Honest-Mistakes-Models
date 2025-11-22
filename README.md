@@ -20,21 +20,21 @@ For reference, the time and memory usage for each model can be found below.
 As reported by the command `/usr/bin/time -l` (`-l` is an option for BSD versions while `-v` provides similar output for GNU versions):
 
 ```
-Password.spthy                     123.78 real       157.68 user        13.31 sys   232113536  peak memory footprint
-AppOnly.spthy                       32.60 real        67.24 user         3.89 sys   615155968  peak memory footprint
-AppOnly_Plus.spthy                  32.54 real        68.74 user          3.91 sys   719178240 peak memory footprint
-AppOnlyWrite.spthy                  42.28 real        58.25 user         4.63 sys   476628864  peak memory footprint
-AppOnlyWrite_Plus.spthy             42.77 real        57.02 user         4.77 sys   495585344  peak memory footprint
-AppOnlyCompare.spthy                34.55 real        71.81 user        4.40 sys    624511232  peak memory footprint
-AppOnlyCompare_Plus.spthy           35.40 real        76.80 user         4.14 sys   642418880  peak memory footprint
-TwoFactor.spthy                  33917.45 real     35950.69 user      3162.38 sys  1891996288  peak memory footprint
-TwoFactor_Plus.spthy             31587.44 real     36867.35 user      3281.13 sys  1898238656  peak memory footprint
-TwoFactorCompare.spthy           45805.83 real     37221.67 user      3427.51 sys  1936036544  peak memory footprint
-TwoFactorCompare_Plus.spthy      49423.47 real     38365.59 user      3622.16 sys  1934905984  peak memory footprint
-TwoFactorWrite.spthy              5138.45 real      5741.76 user       532.66 sys  1264569664  peak memory footprint
-TwoFactorWrite_Plus.spthy         5151.38 real      5736.23 user       526.61 sys  1267666304  peak memory footprint
-WebAuthn.spthy                     660.09 real       790.13 user         68.95 sys  415876992  peak memory footprint
-WebAuthn_Plus.spthy                664.86 real       797.51 user         69.11 sys  419972864  peak memory footprint
+Password.spthy                     123.78 real       157.68 user       13.31 sys      232113536  peak memory footprint
+AppOnly.spthy                       32.60 real        67.24 user        3.89 sys      615155968  peak memory footprint
+AppOnly_Plus.spthy                  32.54 real        68.74 user        3.91 sys       719178240 peak memory footprint
+AppOnlyWrite.spthy                  42.28 real        58.25 user        4.63 sys      476628864  peak memory footprint
+AppOnlyWrite_Plus.spthy             42.77 real        57.02 user        4.77 sys      495585344  peak memory footprint
+AppOnlyCompare.spthy                34.55 real        71.81 user        4.40 sys      624511232  peak memory footprint
+AppOnlyCompare_Plus.spthy           35.40 real        76.80 user        4.14 sys      642418880  peak memory footprint
+TwoFactor.spthy                  33917.45 real     35950.69 user     3162.38 sys     1891996288  peak memory footprint
+TwoFactor_Plus.spthy             31587.44 real     36867.35 user     3281.13 sys     1898238656  peak memory footprint
+TwoFactorCompare.spthy           45805.83 real     37221.67 user     3427.51 sys     1936036544  peak memory footprint
+TwoFactorCompare_Plus.spthy      49423.47 real     38365.59 user     3622.16 sys     1934905984  peak memory footprint
+TwoFactorWrite.spthy              5138.45 real      5741.76 user      532.66 sys     1264569664  peak memory footprint
+TwoFactorWrite_Plus.spthy         5151.38 real      5736.23 user      526.61 sys     1267666304  peak memory footprint
+WebAuthn.spthy                     660.09 real       790.13 user       68.95 sys      415876992  peak memory footprint
+WebAuthn_Plus.spthy                664.86 real       797.51 user       69.11 sys      419972864  peak memory footprint
 ```
 
 As reported by Tamarin:
