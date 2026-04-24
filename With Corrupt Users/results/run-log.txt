@@ -1,0 +1,286 @@
+===== Password.spthy
+===== Password.spthy
+      191.02 real       237.18 user        21.56 sys
+           328040448  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               52611  page reclaims
+                1496  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  55  voluntary context switches
+             2894008  involuntary context switches
+       2255846946582  instructions retired
+        785736845033  cycles elapsed
+           319375168  peak memory footprint
+===== AppOnly.spthy
+       58.21 real        79.22 user         7.00 sys
+           721403904  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               72354  page reclaims
+                 353  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  58  voluntary context switches
+              895343  involuntary context switches
+        755349415736  instructions retired
+        261027920513  cycles elapsed
+           712788544  peak memory footprint
+===== AppOnly_Plus.spthy
+       58.77 real        81.70 user         7.08 sys
+           722501632  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               79080  page reclaims
+                 357  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  52  voluntary context switches
+              898414  involuntary context switches
+        771658257551  instructions retired
+        267911090962  cycles elapsed
+           713787840  peak memory footprint
+===== AppOnlyCompare.spthy
+       61.33 real        85.02 user         7.34 sys
+           784760832  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               92979  page reclaims
+                 357  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  59  voluntary context switches
+              919816  involuntary context switches
+        811529283564  instructions retired
+        279446120075  cycles elapsed
+           776636800  peak memory footprint
+===== AppOnlyCompare_Plus.spthy
+       62.94 real        93.90 user         7.72 sys
+           793198592  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+              104366  page reclaims
+                 357  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  59  voluntary context switches
+              968143  involuntary context switches
+        882024978639  instructions retired
+        305558653631  cycles elapsed
+           790317696  peak memory footprint
+===== AppOnlyWrite.spthy
+       31.37 real        71.10 user         3.94 sys
+           487620608  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               37326  page reclaims
+                 357  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  57  voluntary context switches
+              488799  involuntary context switches
+        664202163561  instructions retired
+        225375535424  cycles elapsed
+           478709632  peak memory footprint
+===== AppOnlyWrite_Plus.spthy
+       49.61 real        68.38 user         5.82 sys
+           588283904  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               60676  page reclaims
+                 357  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  61  voluntary context switches
+              752527  involuntary context switches
+        650838021074  instructions retired
+        224524060593  cycles elapsed
+           579422272  peak memory footprint
+===== TwoFactor.spthy
+    49529.13 real     48888.78 user     11592.53 sys
+          2024341504  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+           684838652  page reclaims
+                2348  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+               11242  voluntary context switches
+           885379038  involuntary context switches
+     475735292019869  instructions retired
+     168013722717555  cycles elapsed
+          2217120896  peak memory footprint
+===== TwoFactor_Plus.spthy
+    44109.71 real     45688.40 user      9777.48 sys
+          2180579328  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+           575487384  page reclaims
+                 215  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                 486  voluntary context switches
+           815762284  involuntary context switches
+     475611158104765  instructions retired
+     168581996105688  cycles elapsed
+          2236028096  peak memory footprint
+===== TwoFactorCompare.spthy
+    48392.69 real     48000.70 user     12869.19 sys
+          2000830464  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+           912939140  page reclaims
+                 866  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                1371  voluntary context switches
+           959637704  involuntary context switches
+     499538452392429  instructions retired
+     184576254929196  cycles elapsed
+          2270663936  peak memory footprint
+===== TwoFactorCompare_Plus.spthy
+    45031.67 real     47419.12 user      8874.60 sys
+          1455554560  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+           432640924  page reclaims
+                 598  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  95  voluntary context switches
+           801718422  involuntary context switches
+     495426505387408  instructions retired
+     171498965065553  cycles elapsed
+          1617072128  peak memory footprint
+===== TwoFactorWrite.spthy
+     7703.86 real      8191.76 user      1530.00 sys
+          1407696896  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+            78354669  page reclaims
+                 560  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  77  voluntary context switches
+           137625249  involuntary context switches
+      84363153595887  instructions retired
+      29599096992848  cycles elapsed
+          1481690880  peak memory footprint
+===== TwoFactorWrite_Plus.spthy
+     7926.89 real      8357.11 user      1697.29 sys
+          1425358848  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+            93710174  page reclaims
+                 359  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  70  voluntary context switches
+           146158752  involuntary context switches
+      85962584968251  instructions retired
+      30580193181537  cycles elapsed
+          1520570240  peak memory footprint
+===== WebAuthn.spthy
+      954.97 real      1134.99 user       101.16 sys
+           478167040  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               51296  page reclaims
+                 355  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  75  voluntary context switches
+            13772124  involuntary context switches
+      11309361651771  instructions retired
+       3782878762278  cycles elapsed
+           469321600  peak memory footprint
+===== WebAuthn_Plus.spthy
+      961.15 real      1143.63 user       102.67 sys
+           537985024  maximum resident set size
+                   0  average shared memory size
+                   0  average unshared data size
+                   0  average unshared stack size
+               89414  page reclaims
+                 355  page faults
+                   0  swaps
+                   0  block input operations
+                   0  block output operations
+                   0  messages sent
+                   0  messages received
+                   0  signals received
+                  60  voluntary context switches
+            13863966  involuntary context switches
+      11390779533767  instructions retired
+       3812465225670  cycles elapsed
+           529123264  peak memory footprint
