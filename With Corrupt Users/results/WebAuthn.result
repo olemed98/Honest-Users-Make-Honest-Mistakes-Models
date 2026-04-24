@@ -784,7 +784,7 @@ summary of summaries:
 
 analyzed: WebAuthn.spthy
 
-  processing time: 957.90s
+  processing time: 954.92s
   
   SanityCheck (exists-trace): verified (28 steps)
   PerfectUser_WeakSecurity (all-traces): falsified - found trace (11 steps)

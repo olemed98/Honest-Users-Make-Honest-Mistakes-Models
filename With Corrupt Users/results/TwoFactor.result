@@ -899,7 +899,7 @@ summary of summaries:
 
 analyzed: TwoFactor.spthy
 
-  processing time: 129986.16s
+  processing time: 49528.31s
   
   SanityCheck (exists-trace): verified (34 steps)
   PerfectUser_HonestBrowser_WeakSecurity (all-traces): falsified - found trace (7 steps)

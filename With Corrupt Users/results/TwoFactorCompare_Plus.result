@@ -1189,7 +1189,7 @@ summary of summaries:
 
 analyzed: TwoFactorCompare_Plus.spthy
 
-  processing time: 46432.80s
+  processing time: 45031.52s
   
   SanityCheck (exists-trace): verified (34 steps)
   PerfectUser_Security (all-traces): verified (33 steps)

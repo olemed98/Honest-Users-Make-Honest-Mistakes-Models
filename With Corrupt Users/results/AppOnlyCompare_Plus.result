@@ -1389,7 +1389,7 @@ summary of summaries:
 
 analyzed: AppOnlyCompare_Plus.spthy
 
-  processing time: 63.06s
+  processing time: 62.89s
   
   SanityCheck (exists-trace): verified (28 steps)
   PerfectUser_Security (all-traces): verified (31 steps)

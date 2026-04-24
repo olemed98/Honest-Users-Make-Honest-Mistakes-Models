@@ -874,7 +874,7 @@ summary of summaries:
 
 analyzed: AppOnlyWrite.spthy
 
-  processing time: 49.46s
+  processing time: 31.32s
   
   SanityCheck (exists-trace): verified (28 steps)
   PerfectUser_Security (all-traces): falsified - found trace (10 steps)
