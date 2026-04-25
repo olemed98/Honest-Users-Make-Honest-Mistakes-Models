@@ -1,3 +1,6 @@
+# Honest-Users-Make-Honest-Mistakes-Models
+[![DOI](https://zenodo.org/badge/1100794024.svg)](https://doi.org/10.5281/zenodo.19762411)
+
 ## eID Protocol Models 
 
 This repository contains different models of 4 eID protocols that specify different corruption and user mistake scenarios. [Tamarin](https://tamarin-prover.com/) can be used to automatically check which security level can still be achieved in such scenarios. 
