@@ -1,28 +1,25 @@
-# Honest-Users-Make-Honest-Mistakes-Models
-[![DOI](https://zenodo.org/badge/1100794024.svg)](https://doi.org/10.5281/zenodo.19762411)
+# Tamarin Models for "Honest Users Make Honest Mistakes Models"
 
-## eID Protocol Models 
+This repository contains different models of 4 eID protocols that specify different corruption and user mistake scenarios. It accompanies the publication entitled "Honest Users Make Honest Mistakes: A Framework for Analysing eID Protocols", which will be published in the proceedings of EuroS&P 2026. [Tamarin](https://tamarin-prover.com/) can be used to automatically check which security level can still be achieved in such scenarios. 
 
-This repository contains different models of 4 eID protocols that specify different corruption and user mistake scenarios. [Tamarin](https://tamarin-prover.com/) can be used to automatically check which security level can still be achieved in such scenarios. 
+## Reproducing Results
 
-
-### Reproducing Results
-
-We used Tamarin to analyse these models on a laptop (with an Apple M1 Pro chip with 16 BG of memory and 8 cores), using Tamarin (Version 1.8.0) and Maude (Version 2.7.1).
+We used Tamarin to analyse these models on a laptop (with an Apple M1 Pro chip with 16 GB of memory and 8 cores), using Tamarin (Version 1.8.0) and Maude (Version 2.7.1).
 
 One can use the following command, e.g. for Password: 
 
 ```
 tamarin-prover --quit-on-warning --prove Password.spthy > Password.result
 ```
-
-For each model, we provide the result we obtained in the folder `results`. 
+For readability, the threat scenarios with and without corrupt users are distinguished on top level. For each model, we provide the result we obtained in the folder `results`. 
 
 For reference, the time and memory usage for each model can be found below. 
 
 As reported by the command `/usr/bin/time -l` (`-l` is an option for BSD versions while `-v` provides similar output for GNU versions):
 
-For Files With No corruptible Users:
+## Summary of Results for Models with No Corrupt Users
+
+These models can be found in folder `No Corrupt Users`.
 
 ```
 Password.spthy                     123.78 real       157.68 user       13.31 sys      232113536  peak memory footprint
@@ -62,8 +59,9 @@ WebAuthn.result:                    processing time:    660.05s
 WebAuthn_Plus.result:               processing time:    664.82s
 ```
 
+## Summary of Results for Models with Corrupt Users
 
-Fore model with corruptible users:
+These models can be found in folder `With Corrupt Users`.
 
 ```
 Password.spthy                     191.02 real       237.18 user        21.56 sys      319375168  peak memory footprint
