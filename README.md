@@ -11,7 +11,7 @@ One can use the following command, e.g. for Password:
 ```
 tamarin-prover --quit-on-warning --prove Password.spthy > Password.result
 ```
-For readability, the threat scenarios with and without corrupt users are distinguished on top level. For each model, we provide the result we obtained in the folder `results`. 
+For readability, the threat scenarios with and without corrupt users are distinguished at top level. For each model, we provide the result we obtained in the folder `results`. They have been generated using a script, which can be found in the same folder. 
 
 For reference, the time and memory usage for each model can be found below. 
 
